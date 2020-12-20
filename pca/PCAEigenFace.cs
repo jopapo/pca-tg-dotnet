@@ -2,6 +2,7 @@
 using Emgu.CV.CvEnum;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Furb.Pos.DataScience.PCA
 {
@@ -16,6 +17,8 @@ namespace Furb.Pos.DataScience.PCA
         private Mat eigenfaces; // Vai produção
         private Mat projections; // Vai produção
         private int[] labels; // Vai produção
+
+        private readonly bool DEBUG = true;
 
         public PCAEigenFace(int numComponents)
         {
@@ -86,7 +89,9 @@ namespace Furb.Pos.DataScience.PCA
             {
                 Mat y = new Mat(eigenfaces.Rows, 1, eigenfaces.Depth, eigenfaces.NumberOfChannels);
                 eigenfaces.Col(j).CopyTo(y.Col(0));
-                //saveImagem(y, "D:\\PCA\\eigenfaces\\e_" + (j + 1) + ".jpg");
+                if (DEBUG) {
+                    this.SaveImage(y, "out" + (j + 1) + ".jpg");
+                }
             }
         }
 
@@ -194,8 +199,10 @@ namespace Furb.Pos.DataScience.PCA
             //		Core.reduce(src, mean2, /*0=linha, 1=coluna*/1, Core.REDUCE_AVG, mean.type());
             // End OpenCV
 
-            SaveImage(mean, "D:\\PCA\\mean1.jpg");
-            //saveImagem(mean2, "D:\\PCA\\mean2.jpg");
+            if (DEBUG) {
+                SaveImage(mean, "mean1.jpg");
+                //SaveImage(mean2, "D:\\PCA\\mean2.jpg");
+            }
         }
 
         private void SaveImage(Mat image, String filename)
@@ -212,7 +219,11 @@ namespace Furb.Pos.DataScience.PCA
             dst = dst.Reshape(1, 80);
             dst = dst.T();
 
-            CvInvoke.Imwrite(filename, dst);
+            if (! Directory.Exists("out")) {
+                Directory.CreateDirectory("out");
+            }
+            
+            CvInvoke.Imwrite(Path.Combine("out", filename), dst);
         }
 
         internal void Predict(Mat testData, int[] label, double[] confidence, double[] reconstructionError)
