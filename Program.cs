@@ -1,11 +1,13 @@
-﻿namespace pca_tg_dotnet
+﻿using Furb.Pos.DataScience.PCA;
+
+namespace Furb.Pos.DataScience
 {
-    class Program
+
+   class Program
     {
         static void Main(string[] args)
         {
-            var pca = new PCA();
-            pca.Run();
+            var pca = new PCABoostrap(7);
         }
     }
 }

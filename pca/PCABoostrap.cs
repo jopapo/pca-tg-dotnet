@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using Emgu.CV;
 
-namespace pca_tg_dotnet
+namespace Furb.Pos.DataScience.PCA
 {
-    internal class PCA
+    internal class PCABoostrap
     {
-        public PCA()
-        {
-        }
-
-        internal void Run()
+        public PCABoostrap(int p)
         {
             Console.WriteLine("Começou!");
 
-            var p = 7;
             var train = new List<Person>();
             var test = new List<Person>();
 

@@ -1,11 +1,10 @@
 ﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 
-namespace pca_tg_dotnet
+namespace Furb.Pos.DataScience.PCA
 {
     internal class Person : IComparable<Person>
     {

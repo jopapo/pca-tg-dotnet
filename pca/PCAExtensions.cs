@@ -2,7 +2,7 @@
 using Emgu.CV.CvEnum;
 using System.Runtime.InteropServices;
 
-namespace pca_tg_dotnet
+namespace Furb.Pos.DataScience.PCA
 {
     internal static class PCAExtensions
     {

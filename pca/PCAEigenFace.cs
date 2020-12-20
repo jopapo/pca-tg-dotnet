@@ -3,7 +3,7 @@ using Emgu.CV.CvEnum;
 using System;
 using System.Collections.Generic;
 
-namespace pca_tg_dotnet
+namespace Furb.Pos.DataScience.PCA
 {
     internal class PCAEigenFace
     {
