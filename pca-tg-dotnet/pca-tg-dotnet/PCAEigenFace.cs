@@ -141,7 +141,7 @@ namespace pca_tg_dotnet
                     double mv = mean.GetDoubleValue(i, 0);
                     Mat data = train[j].Data;
                     //double pv = data.get(i, 0)[0];
-                    double pv = Convert.ToDouble(data.Row(i).Col(0).GetData().GetValue(0));
+                    double pv = data.GetDoubleValue(i, 0);
                     double v = pv - mv;
                     //diffs.put(i, j, v);
                     diffs.SetDoubleValue(i, j, v);

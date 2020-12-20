@@ -19,11 +19,11 @@ namespace pca_tg_dotnet
             var train = new List<Person>();
             var test = new List<Person>();
 
-            this.LoadDataset(@"..\..\..\dataset\ORL", train, test, p);
+            this.LoadDataset(@"dataset\ORL", train, test, p);
 
             Console.WriteLine("Treino: {0} / Teste: {1}", train.Count, test.Count);
 
-			List<Person> otherOnes = this.LoadDatasetFromDir(@"..\..\dataset\Outros");
+			List<Person> otherOnes = this.LoadDatasetFromDir(@"dataset\Outros");
 			test.AddRange(otherOnes);
 
 			int start = 2;
