@@ -13,14 +13,14 @@ namespace Furb.Pos.DataScience.PCA
         private readonly ILogger logger;
 
         private int numComponents;
-        private Mat mean; // Vai produção
+        private Mat mean;
         private Mat diffs;
         private Mat covariance;
         private Mat eigenvalues;
         private Mat eigenvectors;
-        private Mat eigenfaces; // Vai produção
-        private Mat projections; // Vai produção
-        private int[] labels; // Vai produção
+        private Mat eigenfaces;
+        private Mat projections;
+        private int[] labels;
 
         public PCAEigenFace(ILogger<PCAEigenFace> logger)
         {
@@ -125,7 +125,7 @@ namespace Furb.Pos.DataScience.PCA
                 double v = eigenvalues.GetDoubleValue(i, 0);
                 double percentual = v / sum * 100;
                 acumulado += percentual;
-                logger.LogInformation("CP {0}, percentual: {1} {2}", (i + 1), percentual, acumulado);
+                logger.LogDebug("CP {0}, percentual: {1} {2}", (i + 1), percentual, acumulado);
             }
         }
 

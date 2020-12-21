@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Emgu.CV;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Furb.Pos.DataScience.PCA
@@ -124,9 +123,8 @@ namespace Furb.Pos.DataScience.PCA
 
 				int trues = truePositivesCount + trueNegativesCount;
 				double accuracy = (double)trues / test.Count * 100;
-				logger.LogDebug("K={0}, taxa de acerto={1}", k, accuracy);
+				logger.LogInformation("{0} componentes principais, acurácia: {1}", k, accuracy);
 
-				//double x = corrects / (double) test.size() * 100;
 				logger.LogDebug("minDis={0}, maxDis={1}, minRec={2}, maxRec={3}",
 					minDis, maxDis, minRec, maxRec);
 			}
@@ -134,11 +132,6 @@ namespace Furb.Pos.DataScience.PCA
 			logger.LogDebug("Terminou!");
         }
 
-
-        private void eigenFaceRecognizerTest()
-        {
-            throw new NotImplementedException();
-        }
 
         private List<Person> LoadDatasetFromDir(string path)
         {
