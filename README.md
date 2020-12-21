@@ -42,3 +42,8 @@ UNIVERSIDADE REGIONAL DE BLUMENAU - INSTITUTO FURB
 CURSO DE ESPECIALIZAÇÃO EM DATA SCIENCE
 DISCIPLINA: ​Aprendizado de Máquina II - Aprendizado Não Supervisionado
 PROFESSOR: ​Márcio Koch
+
+## Potencial de melhoria
+
+[]. Mudar código para possuir menos estado (Métodos Train, Run, etc.);
+[]. Criar os métodos para persistir o modelo.
