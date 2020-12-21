@@ -2,35 +2,46 @@
 using System.Collections.Generic;
 using System.IO;
 using Emgu.CV;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Furb.Pos.DataScience.PCA
 {
     internal class PCABoostrap
     {
-        public PCABoostrap(int p)
+
+		private readonly ILogger logger;
+		private readonly PCAEigenFace eigenFaceModel;
+		
+        public PCABoostrap(ILogger<PCABoostrap> logger, PCAEigenFace eigenFaceModel)
         {
-            Console.WriteLine("Começou!");
+			this.logger = logger;
+			this.eigenFaceModel = eigenFaceModel;
+		}
+
+		internal void Run(int p)
+        {
+			logger.LogDebug("Começou!");
 
             var train = new List<Person>();
             var test = new List<Person>();
 
             this.LoadDataset(@"dataset\ORL", train, test, p);
 
-            Console.WriteLine("Treino: {0} / Teste: {1}", train.Count, test.Count);
+			logger.LogDebug("Treino: {0} / Teste: {1}", train.Count, test.Count);
 
 			List<Person> otherOnes = this.LoadDatasetFromDir(@"dataset\Outros");
 			test.AddRange(otherOnes);
 
-			int start = 2;
-			int end = 10;
+			int start = 10;
+			int end = 20;
 
 			const int MAX_REC = 3500;
 			const int MAX_DIS = 1700;
 
 			for (int k = start; k <= end; k++)
 			{
-				PCAEigenFace model = new PCAEigenFace(k);
-				model.Train(train);
+				this.eigenFaceModel.Train(train, k);
 
 				double minDis = Double.MaxValue;
 				double maxDis = Double.MinValue;
@@ -49,26 +60,26 @@ namespace Furb.Pos.DataScience.PCA
 					double[] confidence = new double[1];
 					double[] reconstructionError = new double[1];
 
-					model.Predict(testData, label, confidence, reconstructionError);
+					this.eigenFaceModel.Predict(testData, label, confidence, reconstructionError);
 
 					bool labelOk = label[0] == personTest.Label;
 					if (labelOk) corrects++;
 
 					if (reconstructionError[0] > MAX_REC)
 					{
-						Console.Error.WriteLine("NOT A PERSON - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
+						logger.LogDebug("NOT A PERSON - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
 							label[0], confidence[0], reconstructionError[0], personTest.Label);
 						if (!labelOk) trueNegativesCount++;
 					}
 					else if (confidence[0] > MAX_DIS)
 					{
-						Console.Error.WriteLine("UNKNOWN PEOPLE (by distance) - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
+						logger.LogDebug("UNKNOWN PEOPLE (by distance) - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
 							label[0], confidence[0], reconstructionError[0], personTest.Label);
 						if (!labelOk) trueNegativesCount++;
 					}
 					else if (reconstructionError[0] > 2400 && confidence[0] > 1500)
 					{
-						Console.Error.WriteLine("UNKNOWN PEOPLE (by two factors) - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
+						logger.LogDebug("UNKNOWN PEOPLE (by two factors) - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
 							label[0], confidence[0], reconstructionError[0], personTest.Label);
 						if (!labelOk) trueNegativesCount++;
 					}
@@ -78,7 +89,7 @@ namespace Furb.Pos.DataScience.PCA
 					}
 					else
 					{
-						Console.Error.WriteLine("UNKNOWN - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
+						logger.LogDebug("UNKNOWN - Predicted label {0}, confidence: {1}, reconstructionError: {2}, original label: {3}",
 							label[0], confidence[0], reconstructionError[0], personTest.Label);
 					}
 
@@ -104,24 +115,25 @@ namespace Furb.Pos.DataScience.PCA
 
 					if (personTest.Label == 182)
 					{
-						Console.WriteLine("Label: {0}, confidence: {1}, reconstructionError:{2}",
+						logger.LogDebug("Label: {0}, confidence: {1}, reconstructionError:{2}",
 							label[0], confidence[0], reconstructionError[0]);
 					}
 				}
 
-				Console.WriteLine("{0} correct: {1} incorrect", corrects, corrects2);
+				logger.LogDebug("{0} correct: {1} incorrect", corrects, corrects2);
 
 				int trues = truePositivesCount + trueNegativesCount;
 				double accuracy = (double)trues / test.Count * 100;
-				Console.WriteLine("K={0}, taxa de acerto={1}", k, accuracy);
+				logger.LogDebug("K={0}, taxa de acerto={1}", k, accuracy);
 
 				//double x = corrects / (double) test.size() * 100;
-				Console.WriteLine("minDis={0}, maxDis={1}, minRec={2}, maxRec={3}",
+				logger.LogDebug("minDis={0}, maxDis={1}, minRec={2}, maxRec={3}",
 					minDis, maxDis, minRec, maxRec);
 			}
 
-			Console.WriteLine("Terminou!");
+			logger.LogDebug("Terminou!");
         }
+
 
         private void eigenFaceRecognizerTest()
         {
@@ -173,5 +185,7 @@ namespace Furb.Pos.DataScience.PCA
                 }
             });
         }
+
+		
     }
 }

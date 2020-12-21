@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,9 @@ namespace Furb.Pos.DataScience.PCA
 {
     internal class PCAEigenFace
     {
+
+        private readonly ILogger logger;
+
         private int numComponents;
         private Mat mean; // Vai produção
         private Mat diffs;
@@ -18,15 +22,15 @@ namespace Furb.Pos.DataScience.PCA
         private Mat projections; // Vai produção
         private int[] labels; // Vai produção
 
-        private readonly bool DEBUG = true;
-
-        public PCAEigenFace(int numComponents)
+        public PCAEigenFace(ILogger<PCAEigenFace> logger)
         {
-            this.numComponents = numComponents;
+            this.logger = logger;
         }
 
-        internal void Train(List<Person> train)
+        internal void Train(List<Person> train, int numComponents)
         {
+            this.numComponents = numComponents;
+
             CalcMean(train);
             CalcDiff(train);
             CalcCovariance();
@@ -89,7 +93,7 @@ namespace Furb.Pos.DataScience.PCA
             {
                 Mat y = new Mat(eigenfaces.Rows, 1, eigenfaces.Depth, eigenfaces.NumberOfChannels);
                 eigenfaces.Col(j).CopyTo(y.Col(0));
-                if (DEBUG) {
+                if (logger.IsEnabled(LogLevel.Debug)) {
                     this.SaveImage(y, "out" + (j + 1) + ".jpg");
                 }
             }
@@ -121,7 +125,7 @@ namespace Furb.Pos.DataScience.PCA
                 double v = eigenvalues.GetDoubleValue(i, 0);
                 double percentual = v / sum * 100;
                 acumulado += percentual;
-                Console.WriteLine("CP {0}, percentual: {1} {2}", (i + 1), percentual, acumulado);
+                logger.LogInformation("CP {0}, percentual: {1} {2}", (i + 1), percentual, acumulado);
             }
         }
 
@@ -199,7 +203,7 @@ namespace Furb.Pos.DataScience.PCA
             //		Core.reduce(src, mean2, /*0=linha, 1=coluna*/1, Core.REDUCE_AVG, mean.type());
             // End OpenCV
 
-            if (DEBUG) {
+            if (logger.IsEnabled(LogLevel.Debug)) {
                 SaveImage(mean, "mean1.jpg");
                 //SaveImage(mean2, "D:\\PCA\\mean2.jpg");
             }
